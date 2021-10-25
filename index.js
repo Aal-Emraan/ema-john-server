@@ -25,9 +25,14 @@ async function run (){
         // get product api
 
         app.get('/products', async(req, res) => {
+            const query = req.query;
+            console.log(req.query);
             const cursor = productCollection.find({});
-            const products = await cursor.limit(10).toArray();
-            res.send(products);
+            const products = await cursor.toArray();
+            const count = await cursor.count();
+            res.send({
+                count,
+                products});
         })
 
     }
