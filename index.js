@@ -18,6 +18,7 @@ async function run (){
         await client.connect();
         const database = client.db('ema_john');
         const productCollection = database.collection("products");
+        const orderCollection = database.collection('orders');
 
         // get product api
 
@@ -32,9 +33,26 @@ async function run (){
             }else{
                 products = await cursor.limit(10).toArray();
             }
-            res.send({
+            res.json({
                 count,
                 products});
+        })
+
+        // use POST to get keys
+
+        app.post('/products/byKeys', async (req, res) => {
+            const keys = req.body;
+            const query = {key: {$in: keys}};
+            const products = await productCollection.find(query).toArray();
+            res.json(products);
+        })
+
+        // use POST to place order api
+
+        app.post('/orders', async (req, res) => {
+            const order = req.body;
+            const result = await orderCollection.insertOne(order);
+            res.json(result);
         })
 
     }
